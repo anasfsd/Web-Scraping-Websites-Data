@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pakistani Cities</title>
+    <style>
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>List of Pakistani Cities</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>City Name</th>
+                <th>Province</th>
+                <th>Population</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Karachi</td>
+                <td>Sindh</td>
+                <td>14,910,352</td>
+            </tr>
+            <tr>
+                <td>Lahore</td>
+                <td>Punjab</td>
+                <td>11,126,285</td>
+            </tr>
+            <tr>
+                <td>Faisalabad</td>
+                <td>Punjab</td>
+                <td>3,204,726</td>
+            </tr>
+            <tr>
+                <td>Rawalpindi</td>
+                <td>Punjab</td>
+                <td>2,098,231</td>
+            </tr>
+            <tr>
+                <td>Peshawar</td>
+                <td>Khyber Pakhtunkhwa</td>
+                <td>1,970,042</td>
+            </tr>
+            <!-- Add more cities here -->
+        </tbody>
+    </table>
+
+</body>
+</html>
