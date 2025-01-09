@@ -1,0 +1,93 @@
+import requests
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+
+service = Service(executable_path='D:/chromedriver.exe')
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+number=1
+try:
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\new.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\newlinks.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]
+                driver.get(url)
+                time.sleep(3)
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+                try:
+                    title = soup.find('div', class_="page-title-wrapper product")
+                    title = str(title.text).strip().replace('\n', '')
+                except:
+                    title = ''
+
+                try:
+                    price = soup.find('span', class_="price-container price-final_price tax weee")
+                    price = str(price.text).strip().replace('\n', '')
+                except:
+                    price = 'No Available'
+
+                try:
+                    image = []
+                    ans = soup.find_all('div',class_="fotorama__thumb fotorama_vertical_ratio fotorama__loaded fotorama__loaded--img")
+                    for anas in ans:
+                        li = anas.find('img')
+                        image.append(str(li['src']))
+                    if image == []:
+                        pics_div = soup.find('div', class_="fotorama__stage__shaft")
+                        if pics_div:
+                            img_tag = pics_div.find('img')
+                            if img_tag and 'src' in img_tag.attrs:
+                                image.append(img_tag['src'])
+                except:
+                    image = ''
+
+                try:
+                    des1 = soup.find('div', class_="product attribute overview")
+                    des1 = str(des1).strip().replace('\n', '')
+                except:
+                    des1 = ''
+
+                try:
+                    des2 = soup.find('div', class_="product attribute description")
+                    des2 = str(des2).strip().replace('\n', '')
+                except:
+                    des2 = ''
+
+                try:
+                    des3 = soup.find('div', class_="additional-attributes-wrapper table-wrapper")
+                    des3 = str(des3).strip().replace('\n', '')
+                except:
+                    des3 = ''
+
+                try:
+                    des4 = soup.find('div', class_="collapse-content p-3")
+                    des4 = str(des4).strip().replace('\n', '')
+                except:
+                    des4 = ''
+
+                try:
+                    des5 = soup.find('div', class_="product__attributes product__attributes--")
+                    des5 = str(des5).strip().replace('\n', '')
+                except:
+                    des5 = ''
+
+                file_write.write(
+                    f"{title}####{price}####{image}####{des1}####{des2}####{des3}####{des4}####{des5}####{line}\n")
+
+                print(title)
+                print(price)
+                print(image)
+                print(des1)
+                print(des2)
+                print(des3)
+                print(des4)
+                print(des5)
+                print(number)
+                number+=1
+finally:
+    driver.quit()
