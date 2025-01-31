@@ -1,0 +1,98 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open the input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\hioki2.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\hioki3.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()  # Read all lines from the input file
+
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract the URL
+                driver.get(url)  # Open the URL in the browser
+                time.sleep(3)  # Wait for the page to load
+
+                # Get page source and parse with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                try:
+                    title = soup.find('h1', class_='product-detail-name', itemprop='name').get_text(strip=True)
+                except AttributeError:
+                    title = ''
+
+                try:
+                    displayed_price = soup.find('p', class_='product-detail-price').get_text(strip=True)
+                except AttributeError:
+                    displayed_price = ''
+
+                try:
+                    des_2 = soup.find('div', class_="product-detail-container product-detail-ordernumber-container")
+                    des_2 = str(
+                        des_2.text.strip().replace('\n', '').replace('Produktnummer:', '').strip()) if des_2 else ''
+                except Exception:
+                    des_2 = ''
+
+                try:
+                    des_6 = soup.find('div', class_="product-detail-container product-detail-ean-container")
+                    des_6 = str(des_6.text.strip().replace('\n', '').replace('EAN:', '').strip()) if des_6 else ''
+                except Exception:
+                    des_6 = ''
+
+                try:
+                    anas = []
+
+                    # Find all div tags with class "gallery-slider-thumbnails-item"
+                    img_tags = soup.find_all('div', class_='gallery-slider-thumbnails-item')
+                    for div in img_tags:
+                        for img in div.find_all('img'):
+                            if 'src' in img.attrs:
+                                anas.append(img['src'])  # Append valid src attributes to anas
+
+                    # Fallback to single image scraping if no images are found in thumbnails
+                    if not anas:
+                        img_tag = soup.find('div', class_='gallery-slider-single-image')
+                        if img_tag:
+                            img = img_tag.find('img')
+                            if img and 'src' in img.attrs:  # Ensure the img tag and src attribute exist
+                                anas.append(img['src'])  # Append the single image source to the list
+                except Exception as e:
+                    print("Error while extracting images:", e)
+                    anas = []  # Ensure the list is empty if an exception occurs
+
+                try:
+                    des_3 = soup.find('div', class_='product-detail-description tab-pane-container')
+                    des_3 = str(des_3).strip().replace('\n', '') if des_3 else ''
+                except AttributeError:
+                    des_3 = ''
+
+                try:
+                    des_4 = soup.find('div', class_='product-detail-custom-field1 tab-pane-container')
+                    des_4 = str(des_4).strip().replace('\n', '') if des_4 else ''
+                except AttributeError:
+                    des_4 = ''
+
+                # Write the extracted data to the output file
+                file_write.write(
+                    f"{title}####{displayed_price}####{des_2}####{des_6}####{(anas)}####{des_3}####{des_4}####{line}"
+                )
+
+                # Debug prints for monitoring
+                print("Title:", title)
+                print("Displayed price:", displayed_price)
+                print("Order Number:", des_2)
+                print("EAN Code:", des_6)
+                print("Image Sources:", anas)
+                print("Description 3:", des_3)
+                print("Description 4:", des_4)
+
+finally:
+    driver.quit()
