@@ -1,0 +1,88 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')  # Ensure the path to the ChromeDriver is correct
+options = Options()
+driver = webdriver.Chrome(service=service, options=options)
+
+def cattelanitalia():
+    # Open the input file and output file
+    input_path = r'C:\Users\Hassan Laptop Point\Downloads\apokin.txt'
+    output_path = r'C:\Users\Hassan Laptop Point\Downloads\apokin2.txt'
+
+    with open(input_path, 'r', encoding='utf-8') as input_file, \
+            open(output_path, 'w', encoding='utf-8') as output_file:
+        lines = input_file.readlines()
+        for line in lines:
+            url = line.split('####')[0]
+            driver.get(url)
+            time.sleep(3)  # Allow the page to load
+            response = driver.page_source
+            soup = BeautifulSoup(response, 'html.parser')
+            try:
+                title = soup.find('h1', class_='h1')
+                title = str(title.text).strip().replace('\n', '') if title else ''
+            except:
+                title = ''
+            try:
+                des_1 = soup.find('div', class_='product-information')
+                des_1 = str(des_1).strip().replace('\n', '') if des_1 else ''
+            except:
+                des_1 = ''
+            try:
+                des_2 = soup.find('p', id='loyalty', class_='align_justify')
+                des_2 = str(des_2).strip().replace('\n', '') if des_2 else ''
+            except:
+                des_2 = ''
+            try:
+                des_3 = soup.find('div', class_='product-description')
+                des_3 = str(des_3).strip().replace('\n', '') if des_3 else ''
+            except:
+                des_3 = ''
+            try:
+                des_4 = soup.find('section', class_='product-features')
+                des_4 = str(des_4).strip().replace('\n', '') if des_4 else ''
+            except:
+                des_4 = ''
+
+            img_src_list = []
+
+            try:
+                # Attempt to find all image tags with the specific class
+                images = soup.find_all('img', class_='no-sirv-lazy-load')  # Use find_all instead of find
+
+                # Loop through each image and extract the src attribute
+                for img in images:
+                    src = img.get('src')  # Get the src attribute
+                    if src:  # Check if src exists
+                        img_src_list.append(src)
+            except:
+                try:
+                    # Attempt to find all divs with the specific class
+                    image_divs = soup.find_all("div", class_="mcs-item")
+
+                # Extract all img src attributes
+                    for div in image_divs:
+                        img_tag = div.find("img")
+                        if img_tag and "src" in img_tag.attrs:
+                            img_src_list.append(img_tag["src"])
+                except:
+                    []
+            # Write to output file
+            output_file.write(f"{title}####{des_1}####{des_2}####{des_3}####{des_4}###{img_src_list}####{img_src_list}####{input_file}")
+            print(title)
+            print(des_1)
+            print(des_2)
+            print(des_3)
+            print(des_4)
+            print(img_src_list)
+
+# Call the function
+try:
+    cattelanitalia()
+finally:
+    driver.quit()  # Ensure the driver quits even if an error occurs
