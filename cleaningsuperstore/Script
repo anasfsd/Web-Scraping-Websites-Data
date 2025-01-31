@@ -1,0 +1,80 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open the input and output files
+    with (open(r"C:\Users\Hassan Laptop Point\Downloads\cleaningsuperstore_links.txt", "r", encoding="utf-8") as file):
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\cleaningsuperstore_links2.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()  # Read all lines from the input file
+
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract the URL
+                driver.get(url)  # Open the URL in the browser
+                time.sleep(3)  # Wait for the page to load
+
+                # Get page source and parse with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                try:
+                    title = soup.find('h1', class_='text-2xl md:text-3xl md:leading-[42px] pr-2')
+                    title = str(title.text).strip().replace('\n', '') if title else ''
+                except:
+                    title = ''
+                try:
+                    des_4 = soup.find('div', class_='main-product__block main-product__block-price')
+                    des_4 = str(des_4.text).strip().replace('\n', '') if des_4 else ''
+                except:
+                    des_4 = ''
+                try:
+                    des_1 = soup.find('div', class_='prose')
+                    des_1 = str(des_1).strip().replace('\n', '') if des_1 else ''
+                except:
+                    des_1 = ''
+                try:
+                    des_2 = soup.find('div',class_='sf__accordion-item sf-tab-content md:opacity-0 open active')
+                    des_2 = str(des_2).strip().replace('\n', '') if des_2 else ''
+                except:
+                    des_2 = ''
+                try:
+                    anas = []
+
+                    # Find all div tags with class "gallery-slider-thumbnails-item"
+                    img_tags = soup.find_all('div',class_='nav-swiper-container flex items-stretch sf-no-scroll-bar opacity-0 transition-all swiper-container-initialized swiper-container-vertical swiper-container-pointer-events swiper-container-free-mode swiper-container-thumbs')
+                    for div in img_tags:
+                        for img in div.find_all('img'):
+                            if 'src' in img.attrs:
+                                anas.append(img['src'])
+
+                                # If no images found in thumbnails, try a different selector
+                    if not anas:
+                        img_tags = soup.find_all('div', class_='sf-prod-media__wrapper')
+                        #img_urls = []
+
+                        for div in img_tags:
+                            img = div.find('img', src=True)  # Find the first 'img' tag with a 'src' attribute
+                            if img:
+                                anas.append(img['src'])
+                except:
+                    anas=[]
+
+                # Write data to the file here
+                file_write.write(str(title)+"####"+str(des_4)+"####" +str(des_1)+"####" +str(des_2)+"####"+str(anas)+"####"+line)
+
+                print(title)
+                print(des_4)
+                #print(original_price)
+                #print(current_price)
+                print(des_1)
+                print(des_2)
+                print(anas)
+finally:
+    driver.quit()
