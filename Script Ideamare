@@ -1,0 +1,170 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+
+
+
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')  # Ensure the path to the ChromeDriver is correct
+options = Options()
+driver = webdriver.Chrome(service=service, options=options)
+driver.get("https://ideamare.com/art/18.023006/REDANCIA-PLASTICA-MM.6.html")
+time.sleep(15)
+
+try:
+    # Open input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\ideamare2.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\ideamare3.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()
+
+            # Process each URL in the input file
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract URL
+
+                # Visit the URL
+                driver.get(url)
+                time.sleep(3)  # Allow page load
+
+                # Parse the page source with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                # Extract and clean title
+                try:
+                    title_elem = soup.find('h1', class_='product__title tx-27 text-left')
+                    title = title_elem.text.strip() if title_elem else 'No title found'
+                except:
+                    title = []
+
+                # Extract SKU
+                try:
+                    skus_elem = soup.find('div', class_='product__sku tx-17')
+                    sku = skus_elem.text.strip() if skus_elem else ''
+                except:
+                    sku = []
+
+                # Extract price
+                try:
+                    price_elem = soup.find('strong', class_='tx-prezzo').find('b')
+                    prices = price_elem.text.strip() if price_elem else ''
+                except:
+                    prices = []
+                try:
+                    img_sources = []  # Initialize an empty list to store image sources
+
+                    # Extract primary image with 'xzoom' class
+                    img_elem = soup.find('img', class_='xzoom')
+                    if img_elem:
+                        img_src = img_elem.get('src', '')  # Get the 'src' attribute
+                        if img_src:
+                            img_sources.append("https://ideamare.com" + img_src)
+
+                    # Extract additional images with 'xzoom-gallery' class
+                    gallery_imgs = soup.find_all('img', class_='xzoom-gallery')
+                    for i in range(1, len(gallery_imgs)):  # Start from index 1
+                        img = gallery_imgs[i]
+                        gallery_src = img.get('src', '')  # Get the 'src' attribute
+                        if gallery_src:
+                            img_sources.append("https://ideamare.com" + gallery_src)
+
+                except Exception as e:
+                    img_sources = []
+
+                # Find the div by its class
+                des1 = []  # Initialize this list before the try-except block
+                try:
+                    description_div = soup.find('div', class_='product__short_description tx-18 col-12')
+                    if description_div:
+                        description = description_div.get_text(strip=True).replace('\n', '')
+                        des1.append(description)  # Correct way to append to the list
+                except:
+                    des1 = []
+
+                try:
+                    # Initialize the list to store the output
+                    des4 = []  # Initialize the list outside the try-except block
+
+                    # Find the target div
+                    sku_div = soup.find('div', class_='product__sku tx-17 col-12')
+
+                    # Get the HTML content of the found element
+                    if sku_div:
+                        html_output = str(sku_div).replace('\n', '')  # Remove newlines
+                        des4.append(html_output)  # Append the cleaned HTML to the list
+                    else:
+                        des4.append([])  # If the SKU div is not found, append an empty list to des4
+
+                except Exception as e:
+                    des4 = []  # In case of an error, reset des4 to an empty list
+
+                try:
+                    anas_srcs = []
+                    images = soup.select('table.text-center.prodotti-figli img')
+                    image_sources = [img['src'] for img in images]
+                    for src in image_sources:
+                        anas_srcs.append("https://ideamare.com" + src)
+                except:
+                    anas_srcs = []
+
+                article_list = []
+                try:
+                    td_elements = soup.find_all('td')
+
+                    # Loop through each 'td' element and extract the relevant information
+                    for td in td_elements:
+                        # Check if the td contains the article number and title
+                        if td.find('a'):
+                            # Extract the article number (first part before <br>)
+                            article_number = td.text.split()[0].replace('REDANCIA', '')
+                            article_list.append(article_number)
+
+                except:
+                    article_list = []
+
+                # Find the table and extract all rows
+                try:
+                    rows = soup.select("table.text-center.prodotti-figli tbody tr")
+                    titles = []
+                    for row in rows:
+                        title_tag = row.select_one("td:nth-of-type(2) a")  # Find the <a> tag in the second <td>
+                        if title_tag:
+                            titles.append(title_tag.text)
+                except:
+                    titles = []
+
+                try:
+                    table_rows = soup.find_all('tr')
+                    price_list = []
+                    for row in table_rows:
+                        price_cell = row.find('td', class_='right')
+                        if price_cell:
+                            extracted_price = price_cell.get_text(strip=True).replace('\xa0', '')
+                            price_list.append(extracted_price)
+                except:
+                    price_list = []
+
+                file_write.write(
+                    str(title) + "####" + str(sku) + "####" + str(prices) + "####" + str(
+                        des1) + "####" + str(des4) + "####" + str(anas_srcs) + "####" + str(article_list) +
+                    "####" + str(titles) + "####" + str(price_list) + "####" + str(img_sources) + "####" + str(line))
+
+                # Append the short description to the list
+                print(f"Title: {title}")
+                print(f"SKU: {sku}")
+                print(f"Price: {prices}")
+                # print(f"Short Description: {short_description}")
+                print(f"des1: {des1}")
+                print(f"des2: {des4}")
+                print(f"2nd img{anas_srcs}")
+                print(f"article:{article_list}")
+                print(f"Ttles{titles}")
+                print(f"Prices{price_list}")
+                print(f"Image Sources: {img_sources}")
+finally:
+    driver.quit()
+
+# cl161669 966161lc
