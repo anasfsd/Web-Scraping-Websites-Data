@@ -1,0 +1,94 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+
+# Initialize the WebDriver
+options = Options()
+# options.add_argument("--start-maximized")  # Uncomment if needed
+service = Service(executable_path='D:/chromedriver.exe')  # Replace with the path to your ChromeDriver
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\1.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\apokin2.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()
+
+            # Process each URL in the input file
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract URL
+
+                driver.get(url)
+                time.sleep(3)  # Allow page load
+
+                # Parse the page source with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                try:
+                    title = soup.find('h1', class_='small')
+                    title = str(title.text).strip().replace('\n', '') if title else ''
+                except:
+                    title = ''
+                try:
+                    des_1 = soup.find('p', class_='description')
+                    des_1 = str(des_1).strip().replace('\n', '') if des_1 else ''
+                except:
+                    des_1 = ''
+                try:
+                    des_2 = soup.find('div', id="product-left")
+                    des_2 = str(des_2).strip().replace('\n', '') if des_2 else ''
+                except:
+                    des_2 = ''
+                try:
+                    des_3 = soup.find('div', class_='product-description')
+                    des_3 = str(des_3).strip().replace('\n', '') if des_3 else ''
+                except:
+                    des_3 = ''
+                try:
+                    des_4 = soup.find('section', class_='product-features')
+                    des_4 = str(des_4).strip().replace('\n', '') if des_4 else ''
+                except:
+                    des_4 = ''
+
+                img_sources = []  # Initialize an empty list to store image sources
+
+                try:
+                    # Extract primary image with 'no-sirv-lazy-load' class
+                    img_elem = soup.find('img', class_='no-sirv-lazy-load')
+                    if img_elem:
+                        img_src = img_elem.get('src', '')  # Get the 'src' attribute
+                        if img_src:
+                            img_sources.append(img_src)  # Add the primary image source to the list
+                except Exception as e:
+                    print(f"Error while extracting primary image: {e}")
+
+                try:
+                    # Extract all images within the div with id 'MagicToolboxSelectors46921'
+                    div = soup.find_all('a', class_='magictoolbox-selector')
+                    if div:
+                        img_tags = div.find('img')  # Find all <img> tags within the div
+                        img_srcs = [img['src'] for img in img_tags if img.get('src')]  # Extract src attributes
+                        img_sources.extend(img_srcs)  # Add to the list
+                except Exception as e:
+                    print(f"Error while extracting images from MagicToolboxSelectors46921: {e}")
+
+                # Print the collected image sources
+#                print(img_sources)
+
+                file_write.write(
+                    f"{title}####{des_1}####{des_2}####{des_3}####{des_4}###{img_sources}####{line}\n")
+
+                # Print extracted data
+                print(title)
+                print(des_1)
+                print(des_2)
+                print(des_3)
+                print(des_4)
+                print(img_sources)
+
+finally:
+    driver.quit()
