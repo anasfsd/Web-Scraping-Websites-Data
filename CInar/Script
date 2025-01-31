@@ -1,0 +1,88 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open the input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\cinar2.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\cinar3.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()  # Read all lines from the input file
+
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract the URL
+                driver.get(url)  # Open the URL in the browser
+                time.sleep(3)  # Wait for the page to load
+
+                # Get page source and parse with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                # Extract title
+                try:
+                    title = soup.find('div', class_='single-product__title')
+                    title = title.text.strip().replace('\n', '') if title else ''
+                except Exception as e:
+                    title = ''
+                    print(f"Error extracting title: {e}")
+
+                # Extract article number (sku)
+                try:
+                    sku_div = soup.find('div', class_='single-product__sku')
+                    article_number = sku_div.get_text(strip=True).replace('Artikelnummer:', '').strip() if sku_div else ''
+                except Exception as e:
+                    article_number = ''
+                    print(f"Error extracting article number: {e}")
+
+                # Extract additional information
+                try:
+                    additional_div = soup.find('div', class_='content', id='additional')
+                    additional_html = str(additional_div).replace('\n', '').replace('\r', '').strip() if additional_div else ''
+                except Exception as e:
+                    additional_html = ''
+                    print(f"Error extracting additional info: {e}")
+
+                # Extract description
+                try:
+                    description_div = soup.find('div', class_='content', id='description')
+                    description_html = str(description_div).replace('\n', '').replace('\r', '').strip() if description_div else ''
+                except Exception as e:
+                    description_html = ''
+                    print(f"Error extracting description: {e}")
+
+                # Extract image URLs
+                try:
+                    img_urls = []  # List to store the URLs
+                    img_urls_set = set()  # Set to avoid duplicates
+
+                    img_tags = soup.find_all('img', class_='gallery__thumbnail-image')
+                    for img in img_tags:
+                        if img.has_attr('src') and img['src']:  # Ensure the src is not empty
+                            src = img['src']
+                            if src not in img_urls_set:  # Check if the URL is already in the set
+                                img_urls.append(src)
+                                img_urls_set.add(src)
+                except:
+                    img_tags = soup.find_all('img', class_='gallery__main-image')
+                    for img in img_tags:
+                        if img.has_attr('src') and img['src']:  # Ensure the src is not empty
+                            img_urls.append(img['src'])
+
+                # Write data to the output file
+                file_write.write(
+                    f"{title}####{article_number}####{additional_html}####{description_html}####{img_urls}####{line}")
+
+                # Print output for debugging
+                print(title)
+                print(article_number)
+                print(additional_html)
+                print(description_html)
+                print(img_urls)
+finally:
+    driver.quit()
