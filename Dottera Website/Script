@@ -1,0 +1,103 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+
+# Initialize the WebDriver
+options = Options()
+# options.add_argument("--start-maximized")  # Uncomment if needed
+service = Service(executable_path='D:/chromedriver.exe')  # Replace with the path to your ChromeDriver
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\doteraa22.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\doteraa3.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()
+
+            # Process each URL in the input file
+            for line in lines:
+                name = line.strip().split("####")  # Remove newline and split by '####'
+                url = name[0]  # Extract URL
+
+                driver.get(url)
+                time.sleep(3)  # Allow page to load
+
+                # Parse the page source with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                # Extract the <h1> tag with class "small"
+                try:
+                    h1_tag = soup.find('h1', class_='small')
+                    if h1_tag:
+                        # Extract the main text and the scientific name separately
+                        main_text = h1_tag.contents[0].strip() if h1_tag.contents else ""
+                        span_text = h1_tag.find('span', class_='scientific').get_text(strip=True).replace('', '') if h1_tag.find('span', class_='scientific') else ""
+                        # Combine them with proper formatting
+                        formatted_text = f"{main_text} {span_text}"
+                    else:
+                        formatted_text = ""
+                except Exception as e:
+                    formatted_text = ""
+
+                # Extract <div> with id "prod-title"
+                try:
+                    prod_title_div = soup.find('div', id='prod-title')
+                    if prod_title_div:
+                        description_html = prod_title_div.decode_contents()
+                        description_html_single_line = " ".join(description_html.split())
+                    else:
+                        description_html_single_line = ""
+                except Exception as e:
+                    description_html_single_line = ""
+
+                # Extract <div> with id "product-left"
+                try:
+                    des_2_div = soup.find('div', id="product-left", class_="col-sm-5")
+                    des_2 = str(des_2_div).strip().replace('\n', '') if des_2_div else ''
+                except Exception as e:
+                    des_2 = ""
+
+                # Extract long description
+                try:
+                    description_header = soup.find('h2', string='Descripción')
+                    description_html = ''.join(str(tag) for tag in description_header.find_next_siblings('p'))
+                    description_one_line = ' '.join(description_html.split())
+                except:
+                    description_one_line=''
+                # Extract images
+                try:
+                    image_divs = soup.find_all('div', class_='gallery-image')
+                    image_urls = []
+
+                    for div in image_divs:
+                        style = div.get('style', '')
+                        start_idx = style.find("url('") + len("url('")
+                        end_idx = style.find("')", start_idx)
+                        if start_idx > len("url('") - 1 and end_idx > start_idx:
+                            url = style[start_idx:end_idx]
+                            image_urls.append('https://www.doterra.com' + url)
+
+                    if not image_urls:
+                        img_tag = soup.find('img', class_='prod-image-hidden')
+                        img_src = img_tag['src'] if img_tag else None
+                        if img_src:
+                            image_urls.append('https://www.doterra.com' + img_src)
+                except Exception as e:
+                    image_urls = []
+
+                # Optional: Print to console for verification
+                print(f"Title: {formatted_text}")
+                print(f"Description 1: {description_html_single_line}")
+                print(f"Description 2: {des_2}")
+                print(f"Description 3: {description_one_line}")
+                print(f"Images: {image_urls}")
+
+                # Write to the output file
+                file_write.write(
+                    f"{formatted_text}####{description_html_single_line}####{des_2}####{description_one_line}####{(image_urls)}####{line}")
+
+finally:
+    driver.quit()
