@@ -1,0 +1,726 @@
+
+
+def cattelanitalia():
+    driver = webdriver.Chrome(executable_path='C:\Program Files (x86)\chromedriver.exe')
+    count = 1
+    f5 = open("C:/Users/HP/Desktop/fourth_shopomag.txt", "w", encoding='utf-8')
+    f4 = open("C:/Users/HP/Desktop/triple_shopomag.txt", "w", encoding='utf-8')
+    f3 = open("C:/Users/HP/Desktop/double_shopomag.txt", "w", encoding='utf-8')
+    f2 = open("C:/Users/HP/Desktop/single_shopomag.txt", "w", encoding='utf-8')
+    f1 = open("C:/Users/HP/Desktop/simple_shopomag.txt", "w", encoding='utf-8')
+    f = open("C:/Users/HP/Desktop/shopomag_links.txt", "r", encoding='utf-8')
+    a = f.readlines()
+    for ii in a:
+        line = ii.split('####')
+        url = line[0]
+        driver.get(url)
+        time.sleep(3)
+        response = driver.page_source
+        soup = BeautifulSoup(response, 'html.parser')
+        vars=soup.find('div',{'class':'select us-product-action'})
+        var=vars.find_all('label',{'class':'control-label'})
+        if len(var)==0:
+            try:
+                title=soup.find('h1',{'class':'us-main-shop-title h1'})
+                title = str(title.text).strip().replace('\n', '')
+            except:
+                title = ''
+            try:
+                sku=soup.find('span',{'class':'us-product-info-code'})
+                sku = str(sku.text).strip().replace('\n', '')
+            except:
+                sku = ''
+            try:
+                price=soup.find('div',{'class':'us-price-block d-flex flex-column-reverse'})
+                price = str(price.text).strip().replace('\n', '')
+            except:
+                price = ''
+            try:
+                price_1=soup.find('div',{'class':'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                price_1 = str(price_1.text).strip().replace('\n', '')
+            except:
+                price_1 = ''
+            try:
+                des=soup.find('div',{'class':'us-product-attributes-cont'})
+                des = str(des).strip().replace('\n','')
+            except:
+                des = ''
+            try:
+                cate=[]
+                cat=soup.find('ul',{'class':'breadcrumb us-breadcrumb'})
+                cats=cat.find_all('li')
+                for categ in cats:
+                    cate.append(str(categ.text).strip().replace('\n',''))
+            except:
+                cate=''
+            try:
+                image=[]
+                img=soup.find('div',{'class':'slick-list draggable'})
+                imgs=img.find_all('a')
+                for pop in imgs:
+                    image.append('https://shopomag.com.ua'+str(pop['href']))
+                if image==[]:
+                    pics = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+            except:
+                try:
+                    pics=soup.find('div',{'class':'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+                except:
+                    pass
+            print(title)
+            print(sku)
+            print(price)
+            print(price_1)
+            print(des)
+            print(cate)
+            print(image)
+            f1.write(str(title)+'####'+str(sku)+'####'+str(price)+'####'+str(price_1)+'####'+str(des)+'####'+str(cate)+'####'+str(image)+'####'+ii)
+        elif len(var)==1:
+            try:
+                title=soup.find('h1',{'class':'us-main-shop-title h1'})
+                title = str(title.text).strip().replace('\n', '')
+            except:
+                title = ''
+            try:
+                sku=soup.find('span',{'class':'us-product-info-code'})
+                sku = str(sku.text).strip().replace('\n', '')
+            except:
+                sku = ''
+            try:
+                price=soup.find('div',{'class':'us-price-block d-flex flex-column-reverse'})
+                price = str(price.text).strip().replace('\n', '')
+            except:
+                price = ''
+            try:
+                price_1=soup.find('div',{'class':'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                price_1 = str(price_1.text).strip().replace('\n', '')
+            except:
+                price_1 = ''
+            try:
+                des=soup.find('div',{'class':'us-product-attributes-cont'})
+                des = str(des).strip().replace('\n','')
+            except:
+                des = ''
+            try:
+                cate=[]
+                cat=soup.find('ul',{'class':'breadcrumb us-breadcrumb'})
+                cats=cat.find_all('li')
+                for categ in cats:
+                    cate.append(str(categ.text).strip().replace('\n',''))
+            except:
+                cate=''
+            try:
+                image=[]
+                img=soup.find('div',{'class':'slick-list draggable'})
+                imgs=img.find_all('a')
+                for pop in imgs:
+                    image.append('https://shopomag.com.ua'+str(pop['href']))
+                if image==[]:
+                    pics = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+            except:
+                try:
+                    pics=soup.find('div',{'class':'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+                except:
+                    pass
+            try:
+                bang_1=soup.find('div',{'class':'select us-product-action'})
+                label_1=bang_1.find_all('label',{'class':'control-label'})[0]
+                label_1=str(label_1.text).strip().replace('\n','')
+            except:
+                label_1=''
+            try:
+                option_1=[]
+                wait = WebDriverWait(driver, 10)
+                bang = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+                oop_1 = bang.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check in oop_1:
+                    option_1.append(check.text.strip().replace('\n', ''))
+            except:
+                option_1=''
+            option_price_1=[]
+            option_price_2 = []
+            option_image=[]
+            wait = WebDriverWait(driver, 10)
+            button = wait.until(EC.presence_of_element_located(
+                (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+            butt = button.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+            for buttons in butt:
+                driver.execute_script("arguments[0].click();", buttons)
+                time.sleep(2)
+                gg = driver.page_source
+                soup = BeautifulSoup(gg, 'html.parser')
+                try:
+                    price_1 = soup.find('div', {'class': 'us-price-block d-flex flex-column-reverse'})
+                    price_1 = str(price_1.text).strip().replace('\n', '')
+                    option_price_1.append(str(price_1))
+                except:
+                    option_price_1.append(str(price_1))
+                try:
+                    price_2 = soup.find('div', {
+                        'class': 'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                    price_2 = str(price_2.text).strip().replace('\n', '')
+                    option_price_2.append(str(price_2))
+                except:
+                    option_price_2.append(str(price_2))
+                try:
+                    pics_1 = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic_1 = pics_1.find('img')
+                    option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+                except:
+                    option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+
+            print(title)
+            print(sku)
+            print(price)
+            print(price_1)
+            print(des)
+            print(cate)
+            print(image)
+            print(label_1)
+            print(option_1)
+            print(option_price_1)
+            print(option_price_2)
+            print(option_image)
+            f2.write(str(title)+'####'+str(sku)+'####'+str(price)+'####'+str(price_1)+'####'+str(des)+'####'
+                     +str(cate)+'####'+str(image)+'####'+str(label_1)+'####'+str(option_1)+'####'
+                     +str(option_price_1)+'####'+str(option_price_2)+'####'+str(option_image)+'####'+ii)
+        elif len(var)==2:
+            try:
+                title=soup.find('h1',{'class':'us-main-shop-title h1'})
+                title = str(title.text).strip().replace('\n', '')
+            except:
+                title = ''
+            try:
+                sku=soup.find('span',{'class':'us-product-info-code'})
+                sku = str(sku.text).strip().replace('\n', '')
+            except:
+                sku = ''
+            try:
+                price=soup.find('div',{'class':'us-price-block d-flex flex-column-reverse'})
+                price = str(price.text).strip().replace('\n', '')
+            except:
+                price = ''
+            try:
+                price_1=soup.find('div',{'class':'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                price_1 = str(price_1.text).strip().replace('\n', '')
+            except:
+                price_1 = ''
+            try:
+                des=soup.find('div',{'class':'us-product-attributes-cont'})
+                des = str(des).strip().replace('\n','')
+            except:
+                des = ''
+            try:
+                cate=[]
+                cat=soup.find('ul',{'class':'breadcrumb us-breadcrumb'})
+                cats=cat.find_all('li')
+                for categ in cats:
+                    cate.append(str(categ.text).strip().replace('\n',''))
+            except:
+                cate=''
+            try:
+                image=[]
+                img=soup.find('div',{'class':'slick-list draggable'})
+                imgs=img.find_all('a')
+                for pop in imgs:
+                    image.append('https://shopomag.com.ua'+str(pop['href']))
+                if image==[]:
+                    pics = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+            except:
+                try:
+                    pics=soup.find('div',{'class':'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+                except:
+                    pass
+            try:
+                bang_1=soup.find('div',{'class':'select us-product-action'})
+                label_1=bang_1.find_all('label',{'class':'control-label'})[0]
+                label_1=str(label_1.text).strip().replace('\n','')
+            except:
+                label_1=''
+            try:
+                option_1=[]
+                wait = WebDriverWait(driver, 10)
+                bang = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+                oop_1 = bang.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check in oop_1:
+                    option_1.append(check.text.strip().replace('\n', ''))
+            except:
+                option_1=''
+            try:
+                bang_2 = soup.find('div', {'class': 'select us-product-action'})
+                label_2=bang_2.find_all('label',{'class':'control-label'})[1]
+                label_2=str(label_2.text).strip().replace('\n','')
+            except:
+                label_2=''
+            try:
+                option_2 = []
+                wait = WebDriverWait(driver, 10)
+                bang_2 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                oop_2 = bang_2.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_2 in oop_2:
+                    option_2.append(check_2.text.strip().replace('\n', ''))
+            except:
+                option_2 = ''
+            option_price_1=[]
+            option_price_2 = []
+            option_image=[]
+            wait = WebDriverWait(driver, 10)
+            button = wait.until(EC.presence_of_element_located(
+                (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+            butt = button.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+            for buttons in butt:
+                driver.execute_script("arguments[0].click();", buttons)
+                time.sleep(2)
+                wait_1 = WebDriverWait(driver, 10)
+                button_1 = wait_1.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                butt_1 = button_1.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                for buttons_1 in butt_1:
+                    driver.execute_script("arguments[0].click();", buttons_1)
+                    time.sleep(2)
+                    gg = driver.page_source
+                    soup = BeautifulSoup(gg, 'html.parser')
+                    try:
+                        price_1 = soup.find('div', {'class': 'us-price-block d-flex flex-column-reverse'})
+                        price_1 = str(price_1.text).strip().replace('\n', '')
+                        option_price_1.append(str(price_1))
+                    except:
+                        option_price_1.append(str(price_1))
+                    try:
+                        price_2 = soup.find('div', {
+                            'class': 'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                        price_2 = str(price_2.text).strip().replace('\n', '')
+                        option_price_2.append(str(price_2))
+                    except:
+                        option_price_2.append(str(price_2))
+                    try:
+                        pics_1 = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                        pic_1 = pics_1.find('img')
+                        option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+                    except:
+                        option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+            print(title)
+            print(sku)
+            print(price)
+            print(price_1)
+            print(des)
+            print(cate)
+            print(image)
+            print(label_1)
+            print(option_1)
+            print(label_2)
+            print(option_2)
+            print(option_price_1)
+            print(option_price_2)
+            print(option_image)
+            f3.write(str(title)+'####'+str(sku)+'####'+str(price)+'####'+str(price_1)+'####'+str(des)+'####'
+                     +str(cate)+'####'+str(image)+'####'+str(label_1)+'####'+str(option_1)+'####'+str(label_2)
+                     +'####'+str(option_2)+'####'+str(option_price_1)+'####'+str(option_price_2)+'####'+str(option_image)+'####'+ii)
+        elif len(var)==3:
+            try:
+                title=soup.find('h1',{'class':'us-main-shop-title h1'})
+                title = str(title.text).strip().replace('\n', '')
+            except:
+                title = ''
+            try:
+                sku=soup.find('span',{'class':'us-product-info-code'})
+                sku = str(sku.text).strip().replace('\n', '')
+            except:
+                sku = ''
+            try:
+                price=soup.find('div',{'class':'us-price-block d-flex flex-column-reverse'})
+                price = str(price.text).strip().replace('\n', '')
+            except:
+                price = ''
+            try:
+                price_1=soup.find('div',{'class':'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                price_1 = str(price_1.text).strip().replace('\n', '')
+            except:
+                price_1 = ''
+            try:
+                des=soup.find('div',{'class':'us-product-attributes-cont'})
+                des = str(des).strip().replace('\n','')
+            except:
+                des = ''
+            try:
+                cate=[]
+                cat=soup.find('ul',{'class':'breadcrumb us-breadcrumb'})
+                cats=cat.find_all('li')
+                for categ in cats:
+                    cate.append(str(categ.text).strip().replace('\n',''))
+            except:
+                cate=''
+            try:
+                image=[]
+                img=soup.find('div',{'class':'slick-list draggable'})
+                imgs=img.find_all('a')
+                for pop in imgs:
+                    image.append('https://shopomag.com.ua'+str(pop['href']))
+                if image==[]:
+                    pics = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+            except:
+                try:
+                    pics=soup.find('div',{'class':'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+                except:
+                    pass
+            try:
+                bang_1=soup.find('div',{'class':'select us-product-action'})
+                label_1=bang_1.find_all('label',{'class':'control-label'})[0]
+                label_1=str(label_1.text).strip().replace('\n','')
+            except:
+                label_1=''
+            try:
+                option_1=[]
+                wait = WebDriverWait(driver, 10)
+                bang = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+                oop_1 = bang.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check in oop_1:
+                    option_1.append(check.text.strip().replace('\n', ''))
+            except:
+                option_1=''
+            try:
+                bang_2 = soup.find('div', {'class': 'select us-product-action'})
+                label_2=bang_2.find_all('label',{'class':'control-label'})[1]
+                label_2=str(label_2.text).strip().replace('\n','')
+            except:
+                label_2=''
+            try:
+                option_2 = []
+                wait = WebDriverWait(driver, 10)
+                bang_2 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                oop_2 = bang_2.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_2 in oop_2:
+                    option_2.append(check_2.text.strip().replace('\n', ''))
+            except:
+                option_2 = ''
+            try:
+                bang_3 = soup.find('div', {'class': 'select us-product-action'})
+                label_3=bang_3.find_all('label',{'class':'control-label'})[2]
+                label_3=str(label_3.text).strip().replace('\n','')
+            except:
+                label_3=''
+            try:
+                option_3 = []
+                wait = WebDriverWait(driver, 10)
+                bang_3 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[4]')))
+
+                oop_3 = bang_3.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_3 in oop_3:
+                    option_3.append(check_3.text.strip().replace('\n', ''))
+            except:
+                option_3 = ''
+            option_price_1=[]
+            option_price_2 = []
+            option_image=[]
+            wait = WebDriverWait(driver, 10)
+            button = wait.until(EC.presence_of_element_located(
+                (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+            butt = button.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+            for buttons in butt:
+                driver.execute_script("arguments[0].click();", buttons)
+                time.sleep(2)
+                wait_1 = WebDriverWait(driver, 10)
+                button_1 = wait_1.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                butt_1 = button_1.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                for buttons_1 in butt_1:
+                    driver.execute_script("arguments[0].click();", buttons_1)
+                    time.sleep(2)
+                    wait_2 = WebDriverWait(driver, 10)
+                    button_2 = wait_2.until(EC.presence_of_element_located(
+                        (By.XPATH,
+                         '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[4]')))
+
+                    butt_2 = button_2.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                    for buttons_2 in butt_2:
+                        driver.execute_script("arguments[0].click();", buttons_2)
+                        time.sleep(2)
+                        gg = driver.page_source
+                        soup = BeautifulSoup(gg, 'html.parser')
+                        try:
+                            price_1 = soup.find('div', {'class': 'us-price-block d-flex flex-column-reverse'})
+                            price_1 = str(price_1.text).strip().replace('\n', '')
+                            option_price_1.append(str(price_1))
+                        except:
+                            option_price_1.append(str(price_1))
+                        try:
+                            price_2 = soup.find('div', {
+                                'class': 'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                            price_2 = str(price_2.text).strip().replace('\n', '')
+                            option_price_2.append(str(price_2))
+                        except:
+                            option_price_2.append(str(price_2))
+                        try:
+                            pics_1 = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                            pic_1 = pics_1.find('img')
+                            option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+                        except:
+                            option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+            print(title)
+            print(sku)
+            print(price)
+            print(price_1)
+            print(des)
+            print(cate)
+            print(image)
+            print(label_1)
+            print(option_1)
+            print(label_2)
+            print(option_2)
+            print(label_3)
+            print(option_3)
+            print(option_price_1)
+            print(option_price_2)
+            print(option_image)
+            f4.write(str(title)+'####'+str(sku)+'####'+str(price)+'####'+str(price_1)+'####'+str(des)+'####'
+                     +str(cate)+'####'+str(image)+'####'+str(label_1)+'####'+str(option_1)+'####'+str(label_2)
+                     +'####'+str(option_2)+'####'+str(label_3)+'####'+str(option_3)
+                     +'####'+str(option_price_1)+'####'+str(option_price_2)+'####'+str(option_image)+'####'+ii)
+        else:
+            try:
+                title=soup.find('h1',{'class':'us-main-shop-title h1'})
+                title = str(title.text).strip().replace('\n', '')
+            except:
+                title = ''
+            try:
+                sku=soup.find('span',{'class':'us-product-info-code'})
+                sku = str(sku.text).strip().replace('\n', '')
+            except:
+                sku = ''
+            try:
+                price=soup.find('div',{'class':'us-price-block d-flex flex-column-reverse'})
+                price = str(price.text).strip().replace('\n', '')
+            except:
+                price = ''
+            try:
+                price_1=soup.find('div',{'class':'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                price_1 = str(price_1.text).strip().replace('\n', '')
+            except:
+                price_1 = ''
+            try:
+                des=soup.find('div',{'class':'us-product-attributes-cont'})
+                des = str(des).strip().replace('\n','')
+            except:
+                des = ''
+            try:
+                cate=[]
+                cat=soup.find('ul',{'class':'breadcrumb us-breadcrumb'})
+                cats=cat.find_all('li')
+                for categ in cats:
+                    cate.append(str(categ.text).strip().replace('\n',''))
+            except:
+                cate=''
+            try:
+                image=[]
+                img=soup.find('div',{'class':'slick-list draggable'})
+                imgs=img.find_all('a')
+                for pop in imgs:
+                    image.append('https://shopomag.com.ua'+str(pop['href']))
+                if image==[]:
+                    pics = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+            except:
+                try:
+                    pics=soup.find('div',{'class':'us-product-slide slick-slide slick-current slick-active'})
+                    pic = pics.find('img')
+                    image.append('https://shopomag.com.ua'+str(pic['src']))
+                except:
+                    pass
+            try:
+                bang_1=soup.find('div',{'class':'select us-product-action'})
+                label_1=bang_1.find_all('label',{'class':'control-label'})[0]
+                label_1=str(label_1.text).strip().replace('\n','')
+            except:
+                label_1=''
+            try:
+                option_1=[]
+                wait = WebDriverWait(driver, 10)
+                bang = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+                oop_1 = bang.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check in oop_1:
+                    option_1.append(check.text.strip().replace('\n', ''))
+            except:
+                option_1=''
+            try:
+                bang_2 = soup.find('div', {'class': 'select us-product-action'})
+                label_2=bang_2.find_all('label',{'class':'control-label'})[1]
+                label_2=str(label_2.text).strip().replace('\n','')
+            except:
+                label_2=''
+            try:
+                option_2 = []
+                wait = WebDriverWait(driver, 10)
+                bang_2 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                oop_2 = bang_2.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_2 in oop_2:
+                    option_2.append(check_2.text.strip().replace('\n', ''))
+            except:
+                option_2 = ''
+            try:
+                bang_3 = soup.find('div', {'class': 'select us-product-action'})
+                label_3=bang_3.find_all('label',{'class':'control-label'})[2]
+                label_3=str(label_3.text).strip().replace('\n','')
+            except:
+                label_3=''
+            try:
+                option_3 = []
+                wait = WebDriverWait(driver, 10)
+                bang_3 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[4]')))
+
+                oop_3 = bang_3.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_3 in oop_3:
+                    option_3.append(check_3.text.strip().replace('\n', ''))
+            except:
+                option_3 = ''
+            try:
+                bang_4 = soup.find('div', {'class': 'select us-product-action'})
+                label_4=bang_4.find_all('label',{'class':'control-label'})[3]
+                label_4=str(label_4.text).strip().replace('\n','')
+            except:
+                label_4=''
+            try:
+                option_4 = []
+                wait = WebDriverWait(driver, 10)
+                bang_4 = wait.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[5]')))
+
+                oop_4 = bang_4.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+
+                for check_4 in oop_4:
+                    option_4.append(check_4.text.strip().replace('\n', ''))
+            except:
+                option_4 = ''
+            option_price_1=[]
+            option_price_2 = []
+            option_image=[]
+            wait = WebDriverWait(driver, 10)
+            button = wait.until(EC.presence_of_element_located(
+                (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[2]')))
+
+            butt = button.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+            for buttons in butt:
+                driver.execute_script("arguments[0].click();", buttons)
+                time.sleep(2)
+                wait_1 = WebDriverWait(driver, 10)
+                button_1 = wait_1.until(EC.presence_of_element_located(
+                    (By.XPATH, '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[3]')))
+
+                butt_1 = button_1.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                for buttons_1 in butt_1:
+                    driver.execute_script("arguments[0].click();", buttons_1)
+                    time.sleep(2)
+                    wait_2 = WebDriverWait(driver, 10)
+                    button_2 = wait_2.until(EC.presence_of_element_located(
+                        (By.XPATH,
+                         '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[4]')))
+
+                    butt_2 = button_2.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                    for buttons_2 in butt_2:
+                        driver.execute_script("arguments[0].click();", buttons_2)
+                        time.sleep(2)
+                        wait_3 = WebDriverWait(driver, 10)
+                        button_3 = wait_3.until(EC.presence_of_element_located(
+                            (By.XPATH,
+                             '/html/body/div[4]/div[4]/div/div/div[1]/div[2]/div[1]/div[2]/div/div[1]/div/div[5]')))
+
+                        butt_3 = button_3.find_elements(By.CSS_SELECTOR, 'label.sizes.btn.btn-info')
+                        for buttons_3 in butt_3:
+                            driver.execute_script("arguments[0].click();", buttons_3)
+                            time.sleep(2)
+                            gg = driver.page_source
+                            soup = BeautifulSoup(gg, 'html.parser')
+                            try:
+                                price_1 = soup.find('div', {'class': 'us-price-block d-flex flex-column-reverse'})
+                                price_1 = str(price_1.text).strip().replace('\n', '')
+                                option_price_1.append(str(price_1))
+                            except:
+                                option_price_1.append(str(price_1))
+                            try:
+                                price_2 = soup.find('div', {
+                                    'class': 'us-price-block us-price-block-not-special d-flex flex-column-reverse'})
+                                price_2 = str(price_2.text).strip().replace('\n', '')
+                                option_price_2.append(str(price_2))
+                            except:
+                                option_price_2.append(str(price_2))
+                            try:
+                                pics_1 = soup.find('div', {'class': 'us-product-slide slick-slide slick-current slick-active'})
+                                pic_1 = pics_1.find('img')
+                                option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+                            except:
+                                option_image.append('https://shopomag.com.ua'+str(pic_1['src']))
+            print(title)
+            print(sku)
+            print(price)
+            print(price_1)
+            print(des)
+            print(cate)
+            print(image)
+            print(label_1)
+            print(option_1)
+            print(label_2)
+            print(option_2)
+            print(label_3)
+            print(option_3)
+            print(label_4)
+            print(option_4)
+            print(option_price_1)
+            print(option_price_2)
+            print(option_image)
+            f5.write(str(title)+'####'+str(sku)+'####'+str(price)+'####'+str(price_1)+'####'+str(des)+'####'
+                     +str(cate)+'####'+str(image)+'####'+str(label_1)+'####'+str(option_1)+'####'+str(label_2)
+                     +'####'+str(option_2)+'####'+str(label_3)+'####'+str(option_3)
+                     +'####'+str(label_4)+'####'+str(option_4)+'####'+str(option_price_1)+'####'+str(option_price_2)+'####'+str(option_image)+'####'+ii)
+
+        print(count)
+        count += 1
+        print('----------------------')
+        # driver.close()
+
+cattelanitalia()
+
