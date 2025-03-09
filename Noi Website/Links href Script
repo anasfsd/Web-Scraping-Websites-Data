@@ -1,0 +1,40 @@
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+import time
+
+# Set up the Chrome driver
+service = Service(executable_path='D:/chromedriver.exe')  # Ensure the path is correct
+options = webdriver.ChromeOptions()
+driver = webdriver.Chrome(service=service, options=options)
+
+try:
+    # Open the input and output files
+    with open(r"C:\Users\Hassan Laptop Point\Downloads\noi.txt", "r", encoding="utf-8") as file:
+        with open(r"C:\Users\Hassan Laptop Point\Downloads\noi2.txt", "w", encoding="utf-8") as file_write:
+            lines = file.readlines()  # Read all lines from the input file
+
+            for line in lines:
+                url = line.strip().split("####")[0]  # Extract the URL
+                driver.get(url)  # Open the URL in the browser
+                time.sleep(3)  # Wait for the page to load
+
+                # Get page source and parse with BeautifulSoup
+                content = driver.page_source
+                soup = BeautifulSoup(content, "html.parser")
+
+                # Find all product links inside divs with class "ut2-gl__image"
+                product_links = []
+                for div_tag in soup.find_all("div", class_="ut2-gl__image"):
+                    a_tag = div_tag.find("a")  # Find the anchor tag inside the div
+                    if a_tag and a_tag.get("href"):
+                        href = a_tag["href"]
+                        product_links.append(href)
+                        file_write.write(href+"####"+line)  # Write each link on a new line
+
+                # Print the extracted links
+                for link in product_links:
+                    print(link)
+
+finally:
+    driver.quit()
